@@ -2,10 +2,10 @@
 
 const { Control, CustomMode } = require('magic-home');
 
-module.exports = function(RED) {
+module.exports = function (RED) {
     function pattern(config) {
         RED.nodes.createNode(this, config);
-
+        console.log('Custom Magic Home node loaded - pattern', config);
         this.device = config.device;
         this.deviceNode = RED.nodes.getNode(this.device);
 
@@ -23,7 +23,7 @@ module.exports = function(RED) {
 
         let node = this;
 
-        node.on("input", function(msg, send, done) {
+        node.on("input", function (msg, send, done) {
             if ('custom' in msg && 'type' in msg && msg.custom && msg.type) {
                 let customPattern = new CustomMode();
 
@@ -37,7 +37,7 @@ module.exports = function(RED) {
                     .then(state => {
                         node.status({ fill: "green", shape: "ring", text: "ok" });
 
-                        node.send({payload: state, input: msg});
+                        node.send({ payload: state, input: msg });
                     }).catch(err => {
                         node.status({ fill: "red", shape: "ring", text: "error" });
 
@@ -49,7 +49,19 @@ module.exports = function(RED) {
                         .then(state => {
                             node.status({ fill: "green", shape: "ring", text: "ok" });
 
-                            node.send({payload: state, input: msg});
+                            node.send({ payload: state, input: msg });
+                        }).catch(err => {
+                            node.status({ fill: "red", shape: "ring", text: "error" });
+
+                            node.error(err.message);
+                        });
+                } else if (msg.pattern && msg.speed) {
+                    console.log('Setting pattern', msg.pattern, msg.speed);
+                    this.control.setPattern(msg.pattern || node.pattern, msg.speed || node.speed)
+                        .then(state => {
+                            node.status({ fill: "green", shape: "ring", text: "ok" });
+
+                            node.send({ payload: state, input: msg });
                         }).catch(err => {
                             node.status({ fill: "red", shape: "ring", text: "error" });
 

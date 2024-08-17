@@ -9,6 +9,7 @@ module.exports = function (RED) {
         this.ip = config.ip;
         this.commandTimeout = config.commandtimeout;
         this.connectionTimeout = config.connectiontimeout;
+        this.cold_white_support = config.cold_white_support;
         this.apply_masks = config.applymasks;
     }
 

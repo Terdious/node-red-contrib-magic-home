@@ -5,7 +5,6 @@ const { Control, CustomMode } = require('magic-home');
 module.exports = function (RED) {
     function pattern(config) {
         RED.nodes.createNode(this, config);
-        console.log('Custom Magic Home node loaded - pattern', config);
         this.device = config.device;
         this.deviceNode = RED.nodes.getNode(this.device);
 
@@ -51,21 +50,52 @@ module.exports = function (RED) {
 
                             node.send({ payload: state, input: msg });
                         }).catch(err => {
-                            node.status({ fill: "red", shape: "ring", text: "error" });
+                            // node.status({ fill: "red", shape: "ring", text: "error" });
 
-                            node.error(err.message);
+                            node.error(err.message + '\n'
+                                + ' on node.pattern ' + node.pattern + '\n'
+                                + ' and node.speed ' + node.speed + '\n'
+                                + ' need query status and compare - wait ' + this.deviceNode.connectionTimeout + 'ms');
+                            this.control.queryState().then(stateStatus => {
+                                if (stateStatus.pattern === msg.pattern && stateStatus.speed === msg.speed) {
+                                    node.status({ fill: "green", shape: "ring", text: "ok" });
+
+                                    node.send({ payload: stateStatus, input: msg.payload });
+                                }
+                            }).catch(err => {
+                                node.status({ fill: "red", shape: "ring", text: "error" });
+                                node.error(err.message);
+                            });
                         });
                 } else if (msg.pattern && msg.speed) {
-                    console.log('Setting pattern', msg.pattern, msg.speed);
                     this.control.setPattern(msg.pattern || node.pattern, msg.speed || node.speed)
                         .then(state => {
                             node.status({ fill: "green", shape: "ring", text: "ok" });
 
                             node.send({ payload: state, input: msg });
                         }).catch(err => {
-                            node.status({ fill: "red", shape: "ring", text: "error" });
+                            // node.status({ fill: "red", shape: "ring", text: "error" });
 
-                            node.error(err.message);
+                            // node.error(err.message + '\n'
+                            //     + ' on msg.pattern ' + msg.pattern + '\n'
+                            //     + ' and msg.speed ' + msg.speed + '\n'
+                            //     + ' need query status and compare - wait ' + this.deviceNode.connectionTimeout + 'ms');
+
+                            setTimeout(() => {
+                                this.control.queryState().then(stateStatus => {
+                                    if (stateStatus.pattern === msg.pattern && stateStatus.speed === msg.speed) {
+                                        node.status({ fill: "green", shape: "ring", text: "ok" });
+
+                                        node.send({ payload: stateStatus, input: msg });
+                                    } else {
+                                        node.status({ fill: "red", shape: "ring", text: "error" });
+                                        node.error('Pattern or speed mismatch after timeout');
+                                    }
+                                }).catch(err => {
+                                    node.status({ fill: "red", shape: "ring", text: "error" });
+                                    node.error(err.message);
+                                });
+                            }, this.deviceNode.connectionTimeout);
                         });
                 }
             }

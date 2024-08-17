@@ -20,35 +20,43 @@
         <label for="node-config-input-applymasks"><i class="fa fa-mask"></i> Apply Masks</label>
         <input type="checkbox" value="false" id="node-config-input-applymasks" style="display: inline-block; width: auto; vertical-align: top;"/>
     </div>
+    <div class="form-row">
+        <label for="node-config-input-cold_white_support"><i class="fa fa-mask"></i> Cold White Support</label>
+        <input type="checkbox" value="false" id="node-config-input-cold_white_support" style="display: inline-block; width: auto; vertical-align: top;"/>
+    </div>
 </script>
 
 <script type='text/javascript'>
     RED.nodes.registerType('magic-home-devices', {
-          category: 'config',
-          defaults: {
-                name: {
-                    value: null,
-                    required: false
-                },
-                ip: {
-                    value: null,
-                    required: true
-                },
-                connectiontimeout: {
-                    value: 10000,
-                    required: true
-                },
-                commandtimeout: {
-                    value: 10000,
-                    required: true
-                },
-                applymasks: {
-                    value: false,
-                    required: true
-                }
-          },
-          label: function() {
-                return this.name || this.ip;
-          }
+        category: 'config',
+        defaults: {
+            name: {
+                value: null,
+                required: false
+            },
+            ip: {
+                value: null,
+                required: true
+            },
+            connectiontimeout: {
+                value: 10000,
+                required: true
+            },
+            commandtimeout: {
+                value: 10000,
+                required: true
+            },
+            applymasks: {
+                value: false,
+                required: true
+            },
+            cold_white_support: {
+                value: false,
+                required: true
+            }
+        },
+        label: function () {
+            return this.name || this.ip;
+        }
     });
 </script>

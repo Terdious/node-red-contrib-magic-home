@@ -7,6 +7,18 @@
         <label for="node-input-device"><i class="icon-tag"></i> Device</label>
         <input type="text" id="node-input-device" placeholder="Device">
     </div>
+    <div class="form-row">
+        <label for="node-input-color_red"><i class="icon-tag"></i> Color red variable</label>
+        <input type="text" id="node-input-color_red" placeholder="Color red variable">
+    </div>
+    <div class="form-row">
+        <label for="node-input-color_green"><i class="icon-tag"></i> Color green variable</label>
+        <input type="text" id="node-input-color_green" placeholder="Color green variable">
+    </div>
+    <div class="form-row">
+        <label for="node-input-color_blue"><i class="icon-tag"></i> Color blue variable</label>
+        <input type="text" id="node-input-color_blue" placeholder="Color blue variable">
+    </div>
 </script>
 
 <script type="text/html" data-help-name="magic-home-cw">
@@ -25,15 +37,41 @@
             device: {
                 type: "magic-home-devices",
                 required: true
+            },
+            color_red: {
+                value: null,
+                required: false
+            },
+            color_green: {
+                value: null,
+                required: false
+            },
+            color_blue: {
+                value: null,
+                required: false
             }
         },
-        inputs:1,
-        outputs:1,
+        inputs: 1,
+        outputs: 1,
         align: 'right',
         icon: 'magic-home.png',
         paletteLabel: 'cw',
-        label: function() {
+        label: function () {
             return this.name || 'cw';
         },
+        oneditprepare: function () {
+            $("#node-input-color_red").typedInput({
+                default: 'msg',
+                types: ['msg', 'flow', 'global']
+            });
+            $("#node-input-color_green").typedInput({
+                default: 'msg',
+                types: ['msg', 'flow', 'global']
+            });
+            $("#node-input-color_blue").typedInput({
+                default: 'msg',
+                types: ['msg', 'flow', 'global']
+            });
+        }
     });
 </script>

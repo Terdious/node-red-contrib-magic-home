@@ -2,7 +2,7 @@
 
 const { Control } = require('magic-home');
 
-module.exports = function(RED) {
+module.exports = function (RED) {
     function cw(config) {
         RED.nodes.createNode(this, config);
 
@@ -14,26 +14,27 @@ module.exports = function(RED) {
             {
                 connect_timeout: parseInt(this.deviceNode.connectionTimeout),
                 command_timeout: parseInt(this.deviceNode.commandTimeout),
-                apply_masks: this.deviceNode.apply_masks
+                apply_masks: this.deviceNode.apply_masks,
+                cold_white_support: this.deviceNode.cold_white_support
             }
         );
 
         let node = this;
 
-        node.on("input", function(msg, send, done) {
+        node.on("input", function (msg, send, done) {
             node.control.setWhites(
                 msg.payload.ww || 0,
                 msg.payload.cw || 0,
             )
-            .then(state => {
-                node.status({ fill: "green", shape: "ring", text: "ok" });
+                .then(state => {
+                    node.status({ fill: "green", shape: "ring", text: "ok" });
 
-                node.send({payload: state, input: msg});
-            }).catch(err => {
-                node.status({ fill: "red", shape: "ring", text: "error" });
+                    node.send({ payload: state, input: msg });
+                }).catch(err => {
+                    node.status({ fill: "red", shape: "ring", text: "error" });
 
-                node.error(err.message);
-            });
+                    node.error(err.message);
+                });
         });
     }
 
